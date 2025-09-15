@@ -13,9 +13,7 @@
     </div>
   </header> -->
 
-  <main>
-    <RouterView />
-  </main>
+  <RouterView />
 </template>
 
 <script setup lang="ts"></script>
