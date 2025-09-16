@@ -39,21 +39,23 @@
         </div>
 
         <div class="flex items-center gap-4">
-          <button
-            class="rounded-md bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm cursor-pointer"
-          >
+          <BaseButton variant="primary" @click="openAddEvent">
             Add Event
-          </button>
-
-          <button
-            class="rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-blue-600 cursor-pointer"
-          >
+            <template #iconRight>
+              <IconPlus />
+            </template>
+          </BaseButton>
+          <BaseButton variant="secondary" @click="printCalendar">
             Print
-          </button>
+            <template #iconRight>
+              <IconPrinter />
+            </template>
+          </BaseButton>
         </div>
       </div>
     </div>
   </header>
+
   <main class="p-4">
     <!-- Calendar Grid -->
     <div class="grid grid-cols-7 gap-2 text-center">
@@ -86,8 +88,11 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import BaseSelect from '@/components/base/BaseSelect.vue'
 import { monthOptions, yearOptions } from '@/types/select'
+import BaseSelect from '@/components/base/BaseSelect.vue'
+import BaseButton from '@/components/base/BaseButton.vue'
+import IconPrinter from '@/components/icons/IconPrinter.vue'
+import IconPlus from '@/components/icons/IconPlus.vue'
 import type { SelectOption } from '@/types/select'
 
 // Get today's date
@@ -123,5 +128,13 @@ function isToday(day: number): boolean {
     selectedMonth.value === today.getMonth() + 1 &&
     selectedYear.value === today.getFullYear()
   )
+}
+
+function openAddEvent() {
+  console.log('Add Event clicked!')
+}
+
+function printCalendar() {
+  window.print()
 }
 </script>
