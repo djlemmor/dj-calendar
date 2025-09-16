@@ -1,16 +1,4 @@
 <template>
-  <!-- <button
-    :type="type"
-    :class="[
-      'rounded-md px-5 py-2.5 text-sm font-medium shadow-sm cursor-pointer transition',
-      variantClasses,
-      fullWidth ? 'w-full' : '',
-    ]"
-    @click="$emit('click', $event)"
-  >
-    <slot />
-  </button> -->
-
   <button
     :type="type"
     :class="[
@@ -18,22 +6,15 @@
       variantClasses,
       fullWidth ? 'w-full' : '',
     ]"
-    @click="$emit('click', $event)"
   >
     <!-- Left Icon -->
-    <span v-if="$slots.iconLeft" class="flex items-center">
-      <slot name="iconLeft" />
-    </span>
+    <slot name="iconLeft" />
 
     <!-- Button text -->
-    <span>
-      <slot />
-    </span>
+    <slot />
 
     <!-- Right Icon -->
-    <span v-if="$slots.iconRight" class="flex items-center">
-      <slot name="iconRight" />
-    </span>
+    <slot name="iconRight" />
   </button>
 </template>
 

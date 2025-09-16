@@ -6,7 +6,7 @@
       :id="label"
       v-model="internalValue"
       @change="emitChange"
-      class="border rounded-md px-3 py-2 border-gray-300 shadow-sm sm:text-sm bg-[#181818] text-white"
+      class="border rounded-md px-3 py-3 border-gray-300 shadow-sm sm:text-sm bg-[#181818] text-white"
     >
       <option disabled value="">{{ placeholder }}</option>
       <option v-for="option in options" :key="option.value" :value="option.value">

@@ -7,17 +7,17 @@
         <div class=" ">
           <nav aria-label="Global">
             <ul class="flex items-center gap-4 text-sm">
+              <!-- Previous Month Button -->
               <li>
-                <a class="text-gray-500 transition hover:text-gray-500/75" href="#">
-                  Month: {{ selectedMonth }}</a
-                >
+                <BaseButton variant="outline" @click="goToPreviousMonth">
+                  <template #iconLeft>
+                    <IconLeftArrow />
+                  </template>
+                  Prev
+                </BaseButton>
               </li>
 
-              <li>
-                <a class="text-gray-500 transition hover:text-gray-500/75" href="#">
-                  Year: {{ selectedYear }}
-                </a>
-              </li>
+              <!-- Month Select -->
               <li>
                 <BaseSelect
                   v-model="selectedMonth"
@@ -26,6 +26,8 @@
                   placeholder="Select month"
                 />
               </li>
+
+              <!-- Year Select -->
               <li>
                 <BaseSelect
                   v-model="selectedYear"
@@ -33,6 +35,16 @@
                   label="Year"
                   placeholder="Select year"
                 />
+              </li>
+
+              <!-- Next Month Button -->
+              <li>
+                <BaseButton variant="outline" @click="goToNextMonth">
+                  Next
+                  <template #iconRight>
+                    <IconRightArrow />
+                  </template>
+                </BaseButton>
               </li>
             </ul>
           </nav>
@@ -87,12 +99,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { monthOptions, yearOptions } from '@/types/select'
 import BaseSelect from '@/components/base/BaseSelect.vue'
 import BaseButton from '@/components/base/BaseButton.vue'
 import IconPrinter from '@/components/icons/IconPrinter.vue'
 import IconPlus from '@/components/icons/IconPlus.vue'
+import IconLeftArrow from '@/components/icons/IconLeftArrow.vue'
+import IconRightArrow from '@/components/icons/IconRightArrow.vue'
 import type { SelectOption } from '@/types/select'
 
 // Get today's date
@@ -137,4 +151,28 @@ function openAddEvent() {
 function printCalendar() {
   window.print()
 }
+
+function goToPreviousMonth() {
+  if (selectedMonth.value === 1) {
+    // Wrap around to December of the previous year
+    selectedMonth.value = 12
+    selectedYear.value -= 1
+  } else {
+    selectedMonth.value -= 1
+  }
+}
+
+function goToNextMonth() {
+  if (selectedMonth.value === 12) {
+    // Wrap around to January of the next year
+    selectedMonth.value = 1
+    selectedYear.value += 1
+  } else {
+    selectedMonth.value += 1
+  }
+}
+
+watch([selectedMonth, selectedYear], ([m, y]) => {
+  console.log('Month:', m, 'Year:', y)
+})
 </script>
