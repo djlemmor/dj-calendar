@@ -89,13 +89,57 @@
         :key="day.value"
         class="p-2 rounded-md cursor-pointer hover:bg-blue-500"
         :class="{
-          'bg-blue-700 text-white': isToday(day.value), // highlight today
+          'bg-blue-700 text-white': isToday(day.value),
         }"
+        @click.stop="openAddEventForDay(day.value)"
       >
-        {{ day.label }}
+        <div>{{ day.label }}</div>
+
+        <!-- Show events for this date -->
+        <ul class="text-xs text-left mt-1 flex flex-col gap-y-2">
+          <li
+            v-for="event in eventsForDay(day.value)"
+            :key="event.id"
+            class="truncate bg-purple-500 text-white px-1 rounded uppercase"
+            @click.stop="openEditEventForDay(event)"
+          >
+            {{ event.title }}
+          </li>
+        </ul>
       </div>
     </div>
   </main>
+
+  <!-- Add Event Modal -->
+  <div
+    v-if="showAddEvent"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-black"
+  >
+    <div class="bg-white rounded-lg shadow-lg p-6 w-96 flex flex-col gap-y-4 relative">
+      <!-- Close button -->
+      <button
+        @click="closeAddEvent"
+        class="absolute top-3 right-3 cursor-pointer text-gray-500 hover:text-gray-700"
+      >
+        <IconClose />
+      </button>
+
+      <h2 class="text-lg font-bold mb-4">Add Event</h2>
+      <input
+        v-model="newEventTitle"
+        type="text"
+        placeholder="Event title"
+        class="w-full border rounded p-2 mb-4"
+      />
+
+      <input v-model="newEventDate" type="date" class="w-full border rounded p-2 mb-4" />
+
+      <div class="flex justify-end gap-2">
+        <BaseButton variant="secondary" @click="closeAddEvent">Cancel</BaseButton>
+        <BaseButton variant="primary" @click="saveEvent">Save</BaseButton>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -107,7 +151,9 @@ import IconPrinter from '@/components/icons/IconPrinter.vue'
 import IconPlus from '@/components/icons/IconPlus.vue'
 import IconLeftArrow from '@/components/icons/IconLeftArrow.vue'
 import IconRightArrow from '@/components/icons/IconRightArrow.vue'
+import IconClose from '@/components/icons/IconClose.vue'
 import type { SelectOption } from '@/types/select'
+import type { CalendarEvent } from '@/types/calendar'
 
 // Get today's date
 const today = new Date()
@@ -144,10 +190,6 @@ function isToday(day: number): boolean {
   )
 }
 
-function openAddEvent() {
-  console.log('Add Event clicked!')
-}
-
 function printCalendar() {
   window.print()
 }
@@ -170,6 +212,64 @@ function goToNextMonth() {
   } else {
     selectedMonth.value += 1
   }
+}
+
+const events = ref<CalendarEvent[]>([])
+const nextEventId = ref(1)
+
+const showAddEvent = ref(false)
+const newEventTitle = ref('')
+const newEventDate = ref('')
+
+// Open modal
+function openAddEvent() {
+  newEventTitle.value = ''
+  newEventDate.value = ''
+  showAddEvent.value = true
+}
+
+// Close modal
+function closeAddEvent() {
+  showAddEvent.value = false
+}
+
+// Save event
+function saveEvent() {
+  if (!newEventTitle.value || !newEventDate.value) {
+    alert('Please enter title and date')
+    return
+  }
+
+  events.value.push({
+    id: nextEventId.value++,
+    title: newEventTitle.value,
+    date: newEventDate.value,
+  })
+
+  console.log('Events:', events.value) // ✅ Debug log
+  closeAddEvent()
+}
+
+function eventsForDay(day: number) {
+  const date = `${selectedYear.value}-${String(selectedMonth.value).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+  return events.value.filter((e) => e.date === date)
+}
+
+function openAddEventForDay(day: number) {
+  // Format date as yyyy-mm-dd
+  const date = `${selectedYear.value}-${String(selectedMonth.value).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+
+  newEventTitle.value = ''
+  newEventDate.value = date // 👈 Pre-fill with the clicked day
+  showAddEvent.value = true
+
+  console.log('openAddEventForDay')
+}
+
+function openEditEventForDay(event: CalendarEvent) {
+  newEventTitle.value = event.title // 👈 Pre-fill title with the clicked day
+  newEventDate.value = event.date // 👈 Pre-fill date with the clicked day
+  showAddEvent.value = true
 }
 
 watch([selectedMonth, selectedYear], ([m, y]) => {
